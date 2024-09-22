@@ -1,11 +1,16 @@
 ﻿@page "/"
 @inject TodoService TodoService
+@inject NavigationManager NavigationManager
 <PageTitle>Home</PageTitle>
 
 <div class="container mx-auto">
+    @if (TodoFormVisible)
+    {
+        <AddTodo OnClose="HideTodoForm" />
+    }
     <div class="flex justify-between items-center">
         <h1 class="text-xl font-bold">Make It</h1>
-        <button class="p-4 text-white bg-secondary rounded-lg hover:bg-secondary-accentuation transition-all">Add new</button>
+        <button @onclick="ShowTodoForm" class="p-2 text-white bg-secondary rounded-lg hover:bg-secondary-accentuation transition-all">➕ Add new</button>
     </div>
     <div class="flex w-full mt-4">
         <table class="w-full">
@@ -39,6 +44,7 @@
 
 @code{
     private List<Todo> Todos = [];
+    private bool TodoFormVisible;
     protected override async Task  OnInitializedAsync()
     {
         Todos = [.. await TodoService.GetAllAsync()];
@@ -51,6 +57,17 @@
         {
             Todos.Remove(todo);
         }
+    }
+
+    private void ShowTodoForm()
+    {
+        TodoFormVisible = true;
+    }
+
+    private void HideTodoForm()
+    {
+        TodoFormVisible = false;
+        NavigationManager.Refresh();
     }
 
     private async Task ToggleStatus(Todo todo)

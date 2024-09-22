@@ -1,0 +1,47 @@
+@inject TodoService TodoService
+
+<div class="absolute top-0 left-0 w-full h-[100vh] bg-black bg-opacity-35 z-10 flex items-center justify-center p-4">
+    <button @onclick="() => OnClose()" class="absolute text-white top-4 right-4">X</button>
+    <EditForm FormName="TodoForm" Model="@Model" class="flex flex-col gap-4 bg-white p-4">
+        <p class="text-red-400">@ErrorMessage</p>
+        <label>
+            <span>Task name</span>
+            <InputText @bind-Value="@Model.Name" />
+        </label>
+        <label>
+            <span>Is Completed?</span>
+            <InputCheckbox @bind-Value="@Model.IsCompleted" />
+        </label>
+        <button @onclick="Submit">Add Todo</button>
+    </EditForm>
+</div>
+
+@code {
+    [Parameter]
+    public Action OnClose { get; set; } = () => { };
+    private AddTodoModel Model { get; set; } = new();
+    private string ErrorMessage = string.Empty;
+
+    private async Task Submit()
+    {
+        var todo = await TodoService.AddAsync(new Todo()
+        {
+            Name = Model.Name,
+            IsCompleted = Model.IsCompleted
+        });
+
+        if(todo is null)
+        {
+            ErrorMessage = "Failed to create the task";
+            StateHasChanged();
+            return;
+        }
+        OnClose();
+    }
+
+    class AddTodoModel
+    {
+        public string Name { get; set; } = string.Empty;
+        public bool IsCompleted { get; set; }
+    }
+}

@@ -18,6 +18,12 @@ public class TodoService(HttpClient client)
         return response.IsSuccessStatusCode;
     }
 
+    public async Task<Todo?> AddAsync(Todo todo)
+    {
+        var response = await _client.PostAsJsonAsync("todos", todo);
+        return await response.Content.ReadFromJsonAsync<Todo>();
+    }
+
     public async Task ToggleStatus(Todo todo)
     {
         todo.IsCompleted = !todo.IsCompleted;
